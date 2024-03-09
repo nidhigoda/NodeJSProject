@@ -39,25 +39,48 @@ const doesExist = (username)=>{
     }
   }
 
+ const  getAllBooks = ()=>{
+    return new Promise((resolve,reject)=>{
+        setTimeout(() => books ? resolve(books) : reject(new Error("Error getting all books.")), 1000);
+    })
+  }
+
+  const getBookswitIsbn =(isbn)=>{
+    return new Promise((resolve,reject)=>{
+        setTimeout(()=>books ? resolve(books[isbn]) : reject(new Error("Error gettin all books.")),1000);
+    })
+  }
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/',async (req, res)=> {
   //Write your code here
-  
-  return res.status(200).json(JSON.stringify(books));
+ try{ 
+    const book=await getAllBooks();
+   res.status(200).json(JSON.stringify(book));}
+  catch(error){
+    res.status(500).json({ message: "Error getting the book list." })
+  }
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn',async (req, res)=> {
   //Write your code here
-  const isbn=req.params.isbn;
+  try{
+    const isbn=req.params.isbn;
+    const bookwithIsbn= await getBookswitIsbn(isbn);
   return res.status(200).json(books[isbn]);
+}
+  catch(error){
+    res.status(500).json({ message: "Error getting the book list." })
+  }
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author',async (req, res)=> {
   //Write your code here
+
   const books1=[]
   const author=req.params.author;
+
   const keys1=Object.keys(books);
   console.log(keys1)
   const keyValue=keys1.filter((key)=>{
